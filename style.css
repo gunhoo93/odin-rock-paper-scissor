@@ -82,6 +82,14 @@ a {
     background-image: url("icons/scissors.png");
 }
 
+.portrait.lizard {
+    background-image: url("icons/lizard.png");
+}
+
+.portrait.spock {
+    background-image: url("icons/spock.png");
+}
+
 .weapon {
     display: flex;
     flex-direction: column;
