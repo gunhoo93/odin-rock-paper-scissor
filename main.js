@@ -9,6 +9,9 @@ function main(rockPaperScissorPackage) {
     const $matchResult = document.getElementById("match-result");
     const $scoreBoard = document.getElementById("score-board");
 
+    const $playerWeapon = document.getElementById("player-weapon");
+    const $opponentWeapon = document.getElementById("opponent-weapon");
+
     const weapons = createWeaponRack([
         makeWeapon(type = "rock", weeknesses = ["paper"]),
         makeWeapon(type = "paper", weeknesses = ["scissors"]),
@@ -27,6 +30,8 @@ function main(rockPaperScissorPackage) {
         const opponentWeapon = weapons.reverseSelect(playerWeapon, result);
         scoreBoard.record(result);
 
+        $playerWeapon.innerHTML = `<div class="portrait ${playerWeapon}"></div>`;
+        $opponentWeapon.innerHTML = `<div class="portrait ${opponentWeapon}"></div>`;
         $matchResult.textContent = `${result.description}! You played ${playerWeapon}. Your opponent played ${opponentWeapon}`;
         $scoreBoard.innerHTML = `
         <ul>

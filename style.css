@@ -7,6 +7,35 @@ h1 {
     padding: 16px 0;
 }
 
+.layout-selected-weapons {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.portrait {
+    width: inherit;
+    height: inherit;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.selected-weapon {
+    width: 250px;
+    height: 250px;
+}
+
+.portrait.rock {
+    background-image: url("icons/rock.png");
+}
+
+.portrait.paper {
+    background-image: url("icons/paper.png");
+}
+
+.portrait.scissors {
+    background-image: url("icons/scissors.png");
+}
+
 .weapon {
     display: flex;
     flex-direction: column;
