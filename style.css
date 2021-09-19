@@ -7,11 +7,28 @@ h1 {
     padding: 16px 0;
 }
 
+.layout-app {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    row-gap: 30px;
+}
+
+.layout-selected-weapons {
+    display: flex;
+    justify-content: space-evenly;
+}
+
 .layout-score-board {
     display: flex;
     justify-content: center;
     column-gap: 16px;
-    padding: 16px;
+}
+
+.layout-weapons {
+    display: flex;
+    justify-content: space-evenly;
 }
 
 .score-card {
@@ -26,11 +43,6 @@ h1 {
 .match-result {
     font-size: 2.5rem;
     font-weight: 800;
-}
-
-.layout-selected-weapons {
-    display: flex;
-    justify-content: space-evenly;
 }
 
 .portrait {
@@ -84,18 +96,6 @@ h1 {
 
 .weapon-avatar.scissors:hover {
     animation: wiggle-90 0.2s 2;
-}
-
-.layout-flex-column {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    text-align: center;
-}
-
-.layout-weapons {
-    display: flex;
-    justify-content: space-evenly;
 }
 
 @keyframes wiggle-30 {
