@@ -18,9 +18,11 @@ function main(rockPaperScissorPackage) {
     const $luck = document.getElementById("luck");
 
     const weapons = createWeaponRack([
-        makeWeapon(type = "rock", weeknesses = ["paper"]),
-        makeWeapon(type = "paper", weeknesses = ["scissors"]),
-        makeWeapon(type = "scissors", weeknesses = ["rock"])
+        makeWeapon(type = "rock", weeknesses = ["paper", "spock"]),
+        makeWeapon(type = "paper", weeknesses = ["scissors", "lizard"]),
+        makeWeapon(type = "scissors", weeknesses = ["rock", "spock"]),
+        makeWeapon(type = "lizard", weeknesses = ["rock", "scissors"]),
+        makeWeapon(type = "spock", weekness = ["paper", "lizard"])
     ]);
     const scoreBoard = createScoreBoard();
 
@@ -162,6 +164,32 @@ function RockPaperScissorsTests(rockPaperScissorPackage) {
         }
     }
 
+    function testAllWeaponVictoryCondition() {
+        const rock = makeWeapon(type = "rock", weeknesses = ["paper", "spock"]);
+        const paper = makeWeapon(type = "paper", weeknesses = ["scissors", "lizard"]);
+        const scissors = makeWeapon(type = "scissors", weeknesses = ["rock", "spock"]);
+        const lizard = makeWeapon(type = "lizard", weeknesses = ["rock", "scissors"]);
+        const spock = makeWeapon(type = "spock", weekness = ["paper", "lizard"]);
+
+        function testVicotyrCondition(strong, weak, msg) {
+            const result = strong.challenge(weak);
+            if (result !== VICTORY) {
+                throw Error(`Wrong! ${msg}, got ${result.description}`);
+            }
+        }
+
+        testVicotyrCondition(scissors, paper, "Scissors cuts Paper");
+        testVicotyrCondition(paper, rock, "Paper covers Rock");
+        testVicotyrCondition(rock, lizard, "Rock crushes Lizard");
+        testVicotyrCondition(lizard, spock, "Lizard poisons Spock");
+        testVicotyrCondition(spock, scissors, "Spock smashes Scissors");
+        testVicotyrCondition(scissors, lizard, "Scissors decapitates Lizard");
+        testVicotyrCondition(lizard, paper, "Lizard eats Paper");
+        testVicotyrCondition(paper, spock, "Paper disproves Spock");
+        testVicotyrCondition(spock, rock, "Spock vaporizes Rock");
+        testVicotyrCondition(rock, scissors, "Rock crushes Scissors");
+    }
+
     function testSelectWeaponFromWeaponRack() {
         const rock = makeWeapon(type = "rock", weeknesses = ["paper"]);
         const weapons = createWeaponRack([rock]);
@@ -211,6 +239,7 @@ function RockPaperScissorsTests(rockPaperScissorPackage) {
     }
 
     runTest(testWeaponCanChallengeOtherWeapon);
+    runTest(testAllWeaponVictoryCondition);
     runTest(testSelectWeaponFromWeaponRack);
     runTest(testFindOpponentWeapon);
     runTest(testScoreBoard);
