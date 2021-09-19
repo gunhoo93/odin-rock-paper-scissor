@@ -1,4 +1,6 @@
 # Rock Paper Scissors
+View [Live Demo](https://gunhoo93.github.io/odin-rock-paper-scissor/)
+
 ## User Stories
 ### Player can choose their weapon of choice
 - As a player. I want to choose my weapon from Rock, Paper, or Scissors. So that I can play the game. 
