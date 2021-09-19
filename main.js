@@ -57,6 +57,11 @@ function RockPaperScissors() {
     const DRAW = Symbol("Draw");
     const DEFEAT = Symbol("Defeat");
 
+    function pickRandom(array) {
+        const pick = Math.floor(Math.random() * array.length);
+        return array[pick];
+    }
+
     function rockPaperScissors() {
         const roll = Math.random();
         switch (true) {
@@ -99,7 +104,8 @@ function RockPaperScissors() {
             },
             // Given a weapon and a result, returns a weapon that will give the result
             reverseSelect(chosenWeapon, result) {
-                return weapons.find(weapon => chosenWeapon.challenge(weapon) === result);
+                const possibleWeapons = weapons.filter(weapon => chosenWeapon.challenge(weapon) === result);
+                return pickRandom(possibleWeapons);
             }
         };
     }
