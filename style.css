@@ -106,20 +106,36 @@ a {
     width: 75px;
 }
 
-.weapon-avatar:hover {
+.weapon-avatar.spock {
+    transition: transform 0.3s ease-in-out;
+}
+
+.weapon-avatar.spock:hover {
+    transform: scale(1.1);
+}
+
+.is-hover-wiggle30:hover {
     animation: wiggle-30 0.2s 2;
 }
 
-.rock, .paper {
+.is-hover-wiggle90:hover {
+    animation: wiggle-90 0.2s 2;
+}
+
+.is-hover-animate-lizard:hover {
+    animation: lizard-wiggle 0.1s 5;
+}
+
+.tilt30 {
     transform: rotate(30deg);
 }
 
-.scissors {
-    transform: rotate(90deg);
+.tilt-20 {
+    transform: rotate(-20deg);
 }
 
-.weapon-avatar.scissors:hover {
-    animation: wiggle-90 0.2s 2;
+.tilt90 {
+    transform: rotate(90deg);
 }
 
 footer {
@@ -163,6 +179,24 @@ footer .credits {
     }
     .layout-app {
         max-width: 1200px;
+    }
+}
+
+@keyframes lizard-wiggle {
+    from {
+        transform: rotate(0deg);
+    }
+    30% {
+        transform: rotate(4deg);
+    }
+    50% {
+        transform: rotate(8deg);
+    }
+    80% {
+        transform: rotate(4deg);
+    }
+    to {
+        transform: rotate(0deg);
     }
 }
 
