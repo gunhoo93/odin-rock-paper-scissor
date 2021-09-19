@@ -7,10 +7,15 @@ function main(rockPaperScissorPackage) {
 
     const $weapons = Array.from(document.getElementsByClassName("weapon"));
     const $matchResult = document.getElementById("match-result");
-    const $scoreBoard = document.getElementById("score-board");
 
     const $playerWeapon = document.getElementById("player-weapon");
     const $opponentWeapon = document.getElementById("opponent-weapon");
+
+    // Scores
+    const $victoryCount = document.getElementById("victory-count");
+    const $defeatCount = document.getElementById("defeat-count");
+    const $drawCount = document.getElementById("draw-count");
+    const $luck = document.getElementById("luck");
 
     const weapons = createWeaponRack([
         makeWeapon(type = "rock", weeknesses = ["paper"]),
@@ -33,14 +38,11 @@ function main(rockPaperScissorPackage) {
         $playerWeapon.innerHTML = `<div class="portrait ${playerWeapon}"></div>`;
         $opponentWeapon.innerHTML = `<div class="portrait ${opponentWeapon}"></div>`;
         $matchResult.textContent = `${result.description}!`;
-        $scoreBoard.innerHTML = `
-        <ul>
-            <li>Victories: ${scoreBoard.victories}</li>
-            <li>Defeats: ${scoreBoard.defeats}</li>
-            <li>Draws: ${scoreBoard.draws}</li>
-            <li>Win Rate: ${scoreBoard.winRate}</li>
-        </ul>
-        `;
+
+        $victoryCount.textContent = scoreBoard.victories;
+        $defeatCount.textContent = scoreBoard.defeats;
+        $drawCount.textContent = scoreBoard.draws;
+        $luck.textContent = Math.trunc(Math.round(scoreBoard.winRate * 100)) + "%";
     }
 
     $weapons.forEach($elem => {
