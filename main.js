@@ -32,7 +32,7 @@ function main(rockPaperScissorPackage) {
 
         $playerWeapon.innerHTML = `<div class="portrait ${playerWeapon}"></div>`;
         $opponentWeapon.innerHTML = `<div class="portrait ${opponentWeapon}"></div>`;
-        $matchResult.textContent = `${result.description}! You played ${playerWeapon}. Your opponent played ${opponentWeapon}`;
+        $matchResult.textContent = `${result.description}!`;
         $scoreBoard.innerHTML = `
         <ul>
             <li>Victories: ${scoreBoard.victories}</li>
