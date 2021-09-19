@@ -1,9 +1,15 @@
-main(RockPaperScissors);
 RockPaperScissorsTests(RockPaperScissors);
+main(RockPaperScissors);
 
+/** Shared functions **/
+function pickRandom(array) {
+    const pick = Math.floor(Math.random() * array.length);
+    return array[pick];
+}
 
+/** main function for initializing game **/
 function main(rockPaperScissorPackage) {
-    const { createWeaponRack, makeWeapon, createScoreBoard, rockPaperScissors } = rockPaperScissorPackage();
+    const { Game } = rockPaperScissorPackage();
 
     const $weapons = Array.from(document.getElementsByClassName("weapon"));
     const $matchResult = document.getElementById("match-result");
@@ -11,40 +17,43 @@ function main(rockPaperScissorPackage) {
     const $playerWeapon = document.getElementById("player-weapon");
     const $opponentWeapon = document.getElementById("opponent-weapon");
 
-    // Scores
     const $victoryCount = document.getElementById("victory-count");
     const $defeatCount = document.getElementById("defeat-count");
     const $drawCount = document.getElementById("draw-count");
     const $luck = document.getElementById("luck");
 
-    const weapons = createWeaponRack([
-        makeWeapon(type = "rock", weeknesses = ["paper", "spock"]),
-        makeWeapon(type = "paper", weeknesses = ["scissors", "lizard"]),
-        makeWeapon(type = "scissors", weeknesses = ["rock", "spock"]),
-        makeWeapon(type = "lizard", weeknesses = ["rock", "scissors"]),
-        makeWeapon(type = "spock", weekness = ["paper", "lizard"])
-    ]);
-    const scoreBoard = createScoreBoard();
+    const weaponConfigs = [
+        { type: "rock", weakTo: ["paper", "spock"] },
+        { type: "paper", weakTo: ["scissors", "lizard"] },
+        { type: "scissors", weakTo: ["rock", "spock"] },
+        { type: "lizard", weakTo: ["rock", "scissors"] },
+        { type: "spock", weakTo: ["paper", "lizard"] }
+    ];
+
+    const gameFactories = [
+        () => Game.fairDifficulty(weaponConfigs),
+        () => Game.riggedDifficulty(weaponConfigs),
+        () => Game.randomDifficulty(weaponConfigs)
+    ];
+
+    const game = pickRandom(gameFactories)();
 
     function handleWeaponClick(evt) {
-        const weaponType = evt.currentTarget.dataset.weapon;
-        if (!weaponType) {
+        const playerWeaponChoice = evt.currentTarget.dataset.weapon;
+        if (!playerWeaponChoice) {
             return;
         }
 
-        const playerWeapon = weapons.select(weaponType);
-        const result = rockPaperScissors();
-        const opponentWeapon = weapons.reverseSelect(playerWeapon, result);
-        scoreBoard.record(result);
+        const match = game.play(playerWeaponChoice);
 
-        $playerWeapon.innerHTML = `<div class="portrait ${playerWeapon}"></div>`;
-        $opponentWeapon.innerHTML = `<div class="portrait ${opponentWeapon}"></div>`;
-        $matchResult.textContent = `${result.description}!`;
+        $playerWeapon.innerHTML = `<div class="portrait ${match.playerWeapon}"></div>`;
+        $opponentWeapon.innerHTML = `<div class="portrait ${match.opponentWeapon}"></div>`;
+        $matchResult.textContent = `${match.stats.result}!`;
 
-        $victoryCount.textContent = scoreBoard.victories;
-        $defeatCount.textContent = scoreBoard.defeats;
-        $drawCount.textContent = scoreBoard.draws;
-        $luck.textContent = Math.trunc(Math.round(scoreBoard.winRate * 100)) + "%";
+        $victoryCount.textContent = match.stats.victories;
+        $defeatCount.textContent = match.stats.defeats;
+        $drawCount.textContent = match.stats.draws;
+        $luck.textContent = Math.trunc(Math.round(match.stats.winRate * 100)) + "%";
     }
 
     $weapons.forEach($elem => {
@@ -52,34 +61,22 @@ function main(rockPaperScissorPackage) {
     });
 };
 
+/** Provides functionalities for creating Rock, Paper, Scissors game **/
 function RockPaperScissors() {
     const VICTORY = Symbol("Victory");
     const DRAW = Symbol("Draw");
     const DEFEAT = Symbol("Defeat");
 
-    function pickRandom(array) {
-        const pick = Math.floor(Math.random() * array.length);
-        return array[pick];
+    function count(arr, val) {
+        return arr.filter(elem => elem === val).length;
     }
 
-    function rockPaperScissors() {
-        const roll = Math.random();
-        switch (true) {
-            case roll >= 2 / 3:
-                return VICTORY;
-            case roll >= 1 / 3:
-                return DEFEAT;
-            default:
-                return DRAW;
-        }
-    }
-
-    function makeWeapon(type, weeknesses) {
+    function makeWeapon(type, weaknesses) {
         function challenge(opponent) {
             if (type === opponent.type) {
                 return DRAW;
             }
-            const isWeak = weeknesses.some((weekness) => opponent.type === weekness);
+            const isWeak = weaknesses.some((weakness) => opponent.type === weakness);
             return isWeak ? DEFEAT : VICTORY;
         }
 
@@ -102,7 +99,13 @@ function RockPaperScissors() {
                 }
                 return selectedWeapon;
             },
-            // Given a weapon and a result, returns a weapon that will give the result
+
+            /**
+             * Picks a weapon that will create the expected result.
+             * @param {Weapon} chosenWeapon weapon participated in the match.
+             * @param {Symbol} result the expected outcome of match.
+             * @returns {Weapon} a weapon
+             */
             reverseSelect(chosenWeapon, result) {
                 const possibleWeapons = weapons.filter(weapon => chosenWeapon.challenge(weapon) === result);
                 return pickRandom(possibleWeapons);
@@ -111,34 +114,142 @@ function RockPaperScissors() {
     }
 
     function createScoreBoard() {
-        const scores = [];
+        const match_history = [];
 
-        function count(val) {
-            return scores.filter(elem => elem === val).length;
+        function _count(val) {
+            return count(match_history, val);
         }
 
         function record(result) {
-            scores.push(result);
+            match_history.push(result);
         }
 
         return {
             record,
             get victories() {
-                return count(VICTORY);
+                return _count(VICTORY);
             },
             get draws() {
-                return count(DRAW);
+                return _count(DRAW);
             },
             get defeats() {
-                return count(DEFEAT);
+                return _count(DEFEAT);
             },
             get winRate() {
-                return Math.round(this.victories / scores.length * 100) / 100;
+                return Math.round(this.victories / match_history.length * 100) / 100;
             }
         };
     }
 
-    return { createWeaponRack, makeWeapon, createScoreBoard, rockPaperScissors, VICTORY, DEFEAT, DRAW };
+    class GameStrategy {
+        constructor(outcomes) {
+            this.outcomes = outcomes;
+        }
+
+        run() {
+            return pickRandom(this.outcomes);
+        }
+
+        get winningProbability() {
+            return count(this.outcomes, VICTORY) / this.outcomes.length;
+        }
+    }
+
+    /**
+     * Creates a game environment that matches the game's theoratical probability.
+     */
+    class FairGame extends GameStrategy {
+        constructor(weaponCount, weaknessCount) {
+            const outcomes = [DRAW];
+            for (let i = 0; i < weaknessCount; ++i) {
+                outcomes.push(DEFEAT);
+            }
+            for (let i = 0; i < weaponCount - weaknessCount - 1; ++i) {
+                outcomes.push(VICTORY);
+            }
+            super(outcomes);
+        }
+    }
+
+    /**
+     * Creates a game environment where a player is likely to lose.
+     */
+    class RiggedGame extends GameStrategy {
+        constructor() {
+            const outcomes = [];
+            for (let i = 0; i < 40; ++i) {
+                outcomes.push(pickRandom([VICTORY, DEFEAT, DEFEAT, DRAW, DRAW]));
+            }
+            super(outcomes);
+        }
+    }
+
+    class RandomGame extends GameStrategy {
+        constructor() {
+            const outcomesSize = Math.floor(Math.random() * 40) + 5;
+            const outcomes = [];
+            for (let i = 0; i < outcomesSize; ++i) {
+                outcomes.push(pickRandom([VICTORY, DEFEAT, DRAW]));
+            }
+            super(outcomes);
+        }
+    }
+
+    /**
+     * Creates Rock, Paper, Scssor like games.
+     * @param {{type: string, weakTo: string[]}[]} weaponConfigs defines weapons and their relationship. e.g. [ {type: "rock", weakTo: {"paper"}, ... ]
+     * @param {GameStrategy} gameStrategy an object that implements GameStrategy.run() which returns VICTORY, DRAW, or DEFEAT. 
+     */
+    class Game {
+        constructor(weaponConfigs, gameStrategy) {
+            this.gameStrategy = gameStrategy;
+            this.weapons = createWeaponRack(weaponConfigs.map(({ type, weakTo }) => makeWeapon(type, weakTo)));
+            this.scoreBoard = createScoreBoard();
+            console.log(`Game initialized as ${gameStrategy.constructor.name} mode with a winning probability of ${gameStrategy.winningProbability}`);
+        }
+
+        static fairDifficulty(weaponConfigs) {
+            const fairGame = new FairGame(weaponConfigs.length, weaponConfigs[0].weakTo.length);
+            return new Game(weaponConfigs, fairGame);
+        }
+
+        static riggedDifficulty(weaponConfigs) {
+            const riggedGame = new RiggedGame();
+            return new Game(weaponConfigs, riggedGame);
+        }
+
+        static randomDifficulty(weaponConfigs) {
+            const randomGame = new RandomGame();
+            return new Game(weaponConfigs, randomGame);
+        }
+
+        /**
+         * Plays the game given the player choice of weapon.
+         * The weapon choice must exists in weapons from weaponConfigs
+         * @param {string} playerWeaponChoice type of weapon in string literal
+         * @returns {{playerWeapon: string, opponentWeapon: string, stats: {result: string, victories: number, draws: number, defeats: number, winRate: number}}}
+         */
+        play(playerWeaponChoice) {
+            const playerWeapon = this.weapons.select(playerWeaponChoice);
+            const result = this.gameStrategy.run();
+            const opponentWeapon = this.weapons.reverseSelect(playerWeapon, result);
+            this.scoreBoard.record(result);
+
+            return Object.freeze({
+                playerWeapon: playerWeapon.toString(),
+                opponentWeapon: opponentWeapon.toString(),
+                stats: {
+                    result: result.description,
+                    victories: this.scoreBoard.victories,
+                    defeats: this.scoreBoard.defeats,
+                    draws: this.scoreBoard.draws,
+                    winRate: this.scoreBoard.winRate,
+                }
+            });
+        }
+    }
+
+    return { createWeaponRack, makeWeapon, createScoreBoard, VICTORY, DEFEAT, DRAW, Game };
 }
 
 
@@ -156,9 +267,9 @@ function RockPaperScissorsTests(rockPaperScissorPackage) {
     }
 
     function testWeaponCanChallengeOtherWeapon() {
-        const rock = makeWeapon(type = "rock", weeknesses = ["paper"]);
-        const paper = makeWeapon(type = "paper", weeknesses = ["scissors"]);
-        const scissors = makeWeapon(type = "scissors", weeknesses = ["rock"]);
+        const rock = makeWeapon(type = "rock", weaknesses = ["paper"]);
+        const paper = makeWeapon(type = "paper", weaknesses = ["scissors"]);
+        const scissors = makeWeapon(type = "scissors", weaknesses = ["rock"]);
 
         switch (true) {
             case rock.challenge(paper) !== DEFEAT:
@@ -171,11 +282,11 @@ function RockPaperScissorsTests(rockPaperScissorPackage) {
     }
 
     function testAllWeaponVictoryCondition() {
-        const rock = makeWeapon(type = "rock", weeknesses = ["paper", "spock"]);
-        const paper = makeWeapon(type = "paper", weeknesses = ["scissors", "lizard"]);
-        const scissors = makeWeapon(type = "scissors", weeknesses = ["rock", "spock"]);
-        const lizard = makeWeapon(type = "lizard", weeknesses = ["rock", "scissors"]);
-        const spock = makeWeapon(type = "spock", weekness = ["paper", "lizard"]);
+        const rock = makeWeapon(type = "rock", weaknesses = ["paper", "spock"]);
+        const paper = makeWeapon(type = "paper", weaknesses = ["scissors", "lizard"]);
+        const scissors = makeWeapon(type = "scissors", weaknesses = ["rock", "spock"]);
+        const lizard = makeWeapon(type = "lizard", weaknesses = ["rock", "scissors"]);
+        const spock = makeWeapon(type = "spock", weakness = ["paper", "lizard"]);
 
         function testVicotyrCondition(strong, weak, msg) {
             const result = strong.challenge(weak);
@@ -197,7 +308,7 @@ function RockPaperScissorsTests(rockPaperScissorPackage) {
     }
 
     function testSelectWeaponFromWeaponRack() {
-        const rock = makeWeapon(type = "rock", weeknesses = ["paper"]);
+        const rock = makeWeapon(type = "rock", weaknesses = ["paper"]);
         const weapons = createWeaponRack([rock]);
 
         const selectedWeapon = weapons.select("rock");
@@ -207,9 +318,9 @@ function RockPaperScissorsTests(rockPaperScissorPackage) {
     }
 
     function testFindOpponentWeapon() {
-        const rock = makeWeapon(type = "rock", weeknesses = ["paper"]);
-        const paper = makeWeapon(type = "paper", weeknesses = ["scissors"]);
-        const scissors = makeWeapon(type = "scissors", weeknesses = ["rock"]);
+        const rock = makeWeapon(type = "rock", weaknesses = ["paper"]);
+        const paper = makeWeapon(type = "paper", weaknesses = ["scissors"]);
+        const scissors = makeWeapon(type = "scissors", weaknesses = ["rock"]);
         const weapons = createWeaponRack([rock, paper, scissors]);
 
         switch (true) {

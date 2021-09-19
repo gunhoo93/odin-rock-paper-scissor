@@ -12,6 +12,10 @@ View [Live Demo](https://gunhoo93.github.io/odin-rock-paper-scissor/)
 ### Player can keep track of score
 - As a player, I want to keep track of my score. So that I know how lucky I am.
 
+## Other Features
+- [Play Lizard and Spock](https://bigbangtheory.fandom.com/wiki/Rock,_Paper,_Scissors,_Lizard,_Spock)
+- Every new game may give player unfair odds of winning....
+
 ## Credits
 - Icons made by [Vitaly Gorbachev](https://www.flaticon.com/authors/vitaly-gorbachev) from [www.flaticon.com](www.flaticon.com)
 - Icons made by [Good Ware](https://www.flaticon.com/authors/good-ware) from [www.flaticon.com](www.flaticon.com)
