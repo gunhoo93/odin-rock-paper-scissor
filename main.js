@@ -5,7 +5,7 @@ RockPaperScissorsTests(RockPaperScissors);
 function main(rockPaperScissorPackage) {
     const { createWeaponRack, makeWeapon, createScoreBoard, rockPaperScissors } = rockPaperScissorPackage();
 
-    const $weapons = document.getElementById("weapons");
+    const $weapons = Array.from(document.getElementsByClassName("weapon"));
     const $matchResult = document.getElementById("match-result");
     const $scoreBoard = document.getElementById("score-board");
 
@@ -16,8 +16,8 @@ function main(rockPaperScissorPackage) {
     ]);
     const scoreBoard = createScoreBoard();
 
-    $weapons.addEventListener('click', (evt) => {
-        const weaponType = evt.target.dataset.weapon;
+    function handleWeaponClick(evt) {
+        const weaponType = evt.currentTarget.dataset.weapon;
         if (!weaponType) {
             return;
         }
@@ -36,6 +36,10 @@ function main(rockPaperScissorPackage) {
             <li>Win Rate: ${scoreBoard.winRate}</li>
         </ul>
         `;
+    }
+
+    $weapons.forEach($elem => {
+        $elem.addEventListener('click', handleWeaponClick);
     });
 };
 
