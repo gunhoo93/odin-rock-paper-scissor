@@ -2,9 +2,8 @@ body {
     background-color: hsl(0, 0%, 94%);
 }
 
-h1 {
+h1, h2, h3 {
     margin: 0;
-    padding: 16px 0;
 }
 
 .layout-app {
@@ -12,7 +11,7 @@ h1 {
     flex-direction: column;
     align-items: stretch;
     text-align: center;
-    row-gap: 30px;
+    row-gap: 25px;
 }
 
 .layout-selected-weapons {
@@ -23,25 +22,28 @@ h1 {
 .layout-score-board {
     display: flex;
     justify-content: center;
-    column-gap: 16px;
+    column-gap: 8px;
 }
 
 .layout-weapons {
     display: flex;
     justify-content: space-evenly;
+    padding-top: 24px;
 }
 
 .score-card {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
+    min-width: 70px;
 }
 
 .score {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
+    border-top: 1px solid black;
 }
 
 .match-result {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 800;
 }
 
@@ -53,8 +55,8 @@ h1 {
 }
 
 .selected-weapon {
-    width: 250px;
-    height: 250px;
+    width: 125px;
+    height: 125px;
 }
 
 .portrait.rock {
@@ -77,12 +79,12 @@ h1 {
 }
 
 .weapon-label {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
 }
 
 .weapon-avatar {
-    width: 150px;
+    width: 75px;
     transform: rotate(30deg);
 }
 
